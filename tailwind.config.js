@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+
+import gameColor from './gameColor'
 module.exports = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -12,6 +14,8 @@ module.exports = {
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
+      backgroundColor: gameColor,
+      borderColor: gameColor,
     },
   },
   plugins: [],
