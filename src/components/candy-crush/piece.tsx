@@ -22,14 +22,17 @@ export function createEmptyPieceProps() : piecePropsType{
 
 export default function Piece({tileSize = 20, type, onSwipe, id, x, y} : piecePropsType){
     const offset = tileSize * 0.125
-    const [size, setSize] = useState(0)
+    // const [size, setSize] = useState(0)
+    const size = tileSize * 0.75
+    const [scale, setScale] = useState(0)
     const [{left, top}, setPosition] = useState({left: x * tileSize + offset, top: y * tileSize + offset})
     
     const [positionSprings, positionApi] = useSpring(() => ({
-      from: { x: left, y: top }
+        from: { x: left, y: top }
     }))
     const [sizeSprings, sizeApi] = useSpring(() => ({
-      from: { width: 0, height: 0 }
+        // from: { width: 0, height: 0 }
+        from: { transform : `scale(0)`}
     }))
   
   
@@ -51,17 +54,23 @@ export default function Piece({tileSize = 20, type, onSwipe, id, x, y} : piecePr
     useEffect(() => {
       if(type === 0){
         sizeApi.start({
-          from: { width: size, height: size },
-          to: {width: 0, height: 0}
+            // from: { width: size, height: size },
+            // to: {width: 0, height: 0}
+            from: { transform : `scale(1)`},
+            to: { transform : `scale(0)`},
         })
-        setSize(0)
+        // setSize(0)
+        setScale(0)
       }else{
-        const newSize = tileSize * 0.75
+        // const newSize = tileSize * 0.75
         sizeApi.start({
-            from: { width: size, height: size },
-            to: {width: newSize, height: newSize}
+          from: { transform : `scale(0)`},
+          to: { transform : `scale(1)`},
+            // from: { width: size, height: size },
+            // to: {width: newSize, height: newSize}
         })
-        setSize(newSize)
+        // setSize(newSize)
+        setScale(1)
       }
     }, [type])
     const move = function(dx: number, dy: number){
@@ -74,9 +83,5 @@ export default function Piece({tileSize = 20, type, onSwipe, id, x, y} : piecePr
         onSwipedUp: (eventData) => move(0, -1),
         onSwipedDown: (eventData) => move(0, 1),
     });
-    if(type === -777){
-      return <animated.img {...handlers} id={id} src={`/pieces/special1.svg`} className='absolute' style={{...sizeSprings, ...positionSprings}}></animated.img>
-    }
-    return <animated.img {...handlers} id={id} src={`/pieces/${type}.svg`} className='absolute' style={{...sizeSprings, ...positionSprings}}></animated.img>
-    // return <img {...handlers} id={id} src={`/pieces/${type}.svg`} className='absolute transition-all' style={{left, top, width: size, height: size}}></img>
+    return <animated.img {...handlers} id={id} src={`/pieces/${type}.svg`} className='absolute' style={{...sizeSprings, ...positionSprings, width: size, height: size}}></animated.img>
 }
