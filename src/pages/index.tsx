@@ -9,12 +9,12 @@ const inter = Inter({ subsets: ['latin'] })
 // const candyCrush = new CandyCrush(7, 7)
 export default function Home() {
   const initialBoard = [
+    [0, -777, 0, 0, 0, 0, 0],
+    [0, -777, 0, 0, 0, 0, 0],
+    [0, -777, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, -777, -777],
     [0, 0, 0, 0, 0, 0, 0],
   ]
   const availablePieces = [1, 2, 3, 4]

@@ -3,17 +3,24 @@ import Piece, { piecePropsType } from "./piece";
 import CandyCrush from "@/class/CandyCrush";
 import _ from "lodash";
 
+
+type coordinateType = {x: number, y: number}
 type tileType = {
     piece: piecePropsType,
     blocked: boolean,
 }
-type boardType = Array<Array<tileType>>
-type initialBoardType = Array<Array<number>>
+type boardType = tileType[][]
+type initialBoardType = number[][]
 type gamePropsType = {
-    availablePieces: Array<number>;
+    availablePieces: number[];
     width: number;
     height: number;
     initialBoard: initialBoardType
+}
+async function wait(delay: number){
+    return new Promise<void>((resolve, reject) => {
+        setTimeout(() => resolve(), delay)
+    })
 }
 function convertInitialBoard(initialBoard : initialBoardType) : boardType{
     return initialBoard.map((row, y) => row.map((cell, x) => {
@@ -94,7 +101,7 @@ function clearPieces(board: boardType){
     
     for (let i = 0; i < clearableMap.length; i++) {
         for (let j = 0; j < clearableMap[i].length; j++) {
-            if(clearableMap[i][j]){
+            if(clearableMap[i][j] && board[i][j].piece.type != -777){
                 board[i][j].piece.type = 0
                 pieceCleared = true
             }
@@ -104,6 +111,35 @@ function clearPieces(board: boardType){
     return {board, pieceCleared}
 }
 
+function dropPieces(oldBoard: boardType){
+    // const transposedBoard = _.zip(...board)
+    // console.log(transposedBoard.map(row => row.map(tile => tile?.piece)))
+    const board = _.cloneDeep(oldBoard)
+    for (let i = board.length - 1; i >= 0; i--) {
+        const row = board[i];
+        // console.log(row)
+        for (let j = 0; j < row.length; j++) {
+            if(board[i][j].piece.type === 0){
+                let k = i - 1
+                let normalPieceFound = false
+                while( k >= 0 && !normalPieceFound){
+                    normalPieceFound = board[k][j].piece.type >= 0
+                    if(!normalPieceFound) k--
+                }
+                if(normalPieceFound){
+                    swapPieces(board, {x: j, y: i}, {x: j, y: k})
+                }
+            }
+        }
+    }
+    return board
+}
+
+function swapPieces(board : boardType, source : coordinateType, destination : coordinateType){
+    const temp = board[source.y][source.x].piece
+    board[source.y][source.x].piece = board[destination.y][destination.x].piece
+    board[destination.y][destination.x].piece = temp
+}
 function syncBoardPieces(board : boardType){
     board.forEach((row, y) => {
         row.forEach((piece, x) => {
@@ -118,27 +154,45 @@ export default function Game({width, height, availablePieces, initialBoard} : ga
     // const {width, height} = candyCrush
     const tileSize = 100
     const [board, setBoard] = useState<boardType>([])
-    const moveBro = function(x: number, y: number, {dx = 0, dy = 0} : {dx? : number; dy?: number}){
+    const moveBro = async function(x: number, y: number, {dx = 0, dy = 0} : {dx? : number; dy?: number}){
         let newBoard = board.map(row => row.map(cell => cell))
 
-        const temp = newBoard[y+dy][x+dx]
-        newBoard[y+dy][x+dx] = newBoard[y][x]
-        newBoard[y][x] = temp
+        // const temp = newBoard[y+dy][x+dx].piece
+        // newBoard[y+dy][x+dx].piece = newBoard[y][x].piece
+        // newBoard[y][x].piece = temp
+        swapPieces(newBoard, {x, y}, {x: x + dx, y: y + dy})
+        let result = clearPieces(newBoard)
+        while(result.pieceCleared){
+            newBoard = result.board
+            syncBoardPieces(newBoard)
+            setBoard(newBoard)
+            await wait(250)
+            newBoard = dropPieces(newBoard)
+            syncBoardPieces(newBoard)
+            setBoard(newBoard)
+            await wait(250)
 
-        newBoard = clearPieces(newBoard).board
+            newBoard = fillAllZero(newBoard, availablePieces)
+            setBoard(newBoard)
+            await wait(250)
 
-        syncBoardPieces(newBoard)
+            // syncBoardPieces(newBoard)
+            // setBoard(newBoard)
+            // await wait(500)
 
-        setBoard(newBoard)
+            result = clearPieces(newBoard)
+        }
+        // newBoard = clearPieces(newBoard).board
+        // console.log(newBoard)
+        // dropPieces(newBoard)
+        // syncBoardPieces(newBoard)
+
+        // setBoard(newBoard)
     }
     
     useEffect(() => {
         const newBoard = fillAllZero( convertInitialBoard(initialBoard), availablePieces)
         setBoard(newBoard)
-
-        // setTimeout(function(){
-        //     setBoard(clearPieces(newBoard).board)
-        // }, 3000)
     }, [initialBoard])
     const pieces = _.flatten(board).map(tile => tile.piece)
     return (
@@ -147,10 +201,17 @@ export default function Game({width, height, availablePieces, initialBoard} : ga
                 _.flatten(board).map(({piece}) => <Piece {...piece} onSwipe={moveBro} tileSize={tileSize} key={piece.id}></Piece>)
             }
             {
-                board.map((row, i) => {
+                _.zip(...board).map((row, i) => {
                     return (
                         <div key={i}>
-                            {row.map((cell, j) => <div key={j} className='bg-tile border-tileBorder border-2 text-black' style={{width: tileSize, height: tileSize}}></div>)}
+                            {
+                                row.map((cell, j) => {
+                                    if(cell.blocked){
+                                        return <div key={j} className='bg-boardBorder border-boardBorder border-8 text-black z-10 relative' style={{width: tileSize, height: tileSize}}></div>
+                                    }
+                                    return <div key={j} className='bg-tile border-tileBorder border-4 text-black' style={{width: tileSize, height: tileSize}}></div>
+                                })
+                            }
                         </div>
                     )
                 })

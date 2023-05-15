@@ -74,7 +74,9 @@ export default function Piece({tileSize = 20, type, onSwipe, id, x, y} : piecePr
         onSwipedUp: (eventData) => move(0, -1),
         onSwipedDown: (eventData) => move(0, 1),
     });
-    
+    if(type === -777){
+      return <animated.img {...handlers} id={id} src={`/pieces/special1.svg`} className='absolute' style={{...sizeSprings, ...positionSprings}}></animated.img>
+    }
     return <animated.img {...handlers} id={id} src={`/pieces/${type}.svg`} className='absolute' style={{...sizeSprings, ...positionSprings}}></animated.img>
     // return <img {...handlers} id={id} src={`/pieces/${type}.svg`} className='absolute transition-all' style={{left, top, width: size, height: size}}></img>
 }
