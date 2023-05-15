@@ -7,6 +7,7 @@ export type piecePropsType = {
     x: number;
     y: number;
     id: string;
+    isPopping?: boolean;
     tileSize?: number;
     onSwipe?: Function;
 }
@@ -20,7 +21,7 @@ export function createEmptyPieceProps() : piecePropsType{
     }
 }
 
-export default function Piece({tileSize = 20, type, onSwipe, id, x, y} : piecePropsType){
+export default function Piece({tileSize = 20, type, onSwipe, id, x, y, isPopping = false} : piecePropsType){
     const offset = tileSize * 0.125
     // const [size, setSize] = useState(0)
     const size = tileSize * 0.75
@@ -32,46 +33,57 @@ export default function Piece({tileSize = 20, type, onSwipe, id, x, y} : piecePr
     }))
     const [sizeSprings, sizeApi] = useSpring(() => ({
         // from: { width: 0, height: 0 }
-        from: { transform : `scale(0)`}
+        from: { transform : `scale(0)`},
+        config: {
+            friction: 20,
+        },
     }))
   
-  
+    useEffect(() => {
+        if(isPopping){
+            sizeApi.start({
+                from: { transform : `scale(1)` },
+                to: [
+                    { transform : `scale(1.5)` },
+                    { transform : `scale(0)` }
+                ],
+                config: {
+                    friction: 10,
+                    mass: 1,
+                    tension: 200,
+                },        
+            })
+        }
+    }, [isPopping])
     useEffect(() => {
       const newLeft = x * tileSize + offset
       const newTop = y * tileSize + offset
       positionApi.start({
-        from: {
-            y: top,
-            x: left,
-        },
-        to: {
-            y: newTop,
-            x: newLeft,
-        }
-      })
-      setPosition({left: newLeft, top: newTop})
+            from: {
+                y: top,
+                x: left,
+            },
+            to: {
+                y: newTop,
+                x: newLeft,
+            }
+        })
+        setPosition({left: newLeft, top: newTop})
     }, [x, y])
     useEffect(() => {
-      if(type === 0){
-        sizeApi.start({
-            // from: { width: size, height: size },
-            // to: {width: 0, height: 0}
-            from: { transform : `scale(1)`},
-            to: { transform : `scale(0)`},
-        })
-        // setSize(0)
-        setScale(0)
-      }else{
-        // const newSize = tileSize * 0.75
-        sizeApi.start({
-          from: { transform : `scale(0)`},
-          to: { transform : `scale(1)`},
-            // from: { width: size, height: size },
-            // to: {width: newSize, height: newSize}
-        })
-        // setSize(newSize)
-        setScale(1)
-      }
+        if(type === 0){
+            sizeApi.start({
+                from: { transform : `scale(1)`},
+                to: { transform : `scale(0)`},
+            })
+            setScale(0)
+        }else{
+            sizeApi.start({
+                from: { transform : `scale(0)`},
+                to: { transform : `scale(1)`},
+            })
+            setScale(1)
+        }
     }, [type])
     const move = function(dx: number, dy: number){
         onSwipe(x, y, {dx, dy})

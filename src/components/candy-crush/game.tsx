@@ -47,12 +47,11 @@ function fillAllZero(board: boardType, availablePieces : Array<number>) : boardT
     }))
 }
 
-function clearPieces(board: boardType){
+function getClearableMap(board : boardType){
     const height = board.length
     const width = board[0].length
     let clearableMap = new Array(height).fill(0).map(() => Array(width).fill(false))
 
-    let pieceCleared = false
     //look for horizontal
     for (let i = 0; i < height; i++) {
         let j = 0
@@ -98,17 +97,35 @@ function clearPieces(board: boardType){
             }
         }
     }
-    
+    return clearableMap
+}
+
+function clearPieces(board: boardType){
+    let pieceCleared = false
+    for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board[i].length; j++) {
+            if(board[i][j].piece.isPopping){
+                board[i][j].piece.type = 0
+                board[i][j].piece.isPopping = false
+                pieceCleared = true
+            }
+        }        
+    }
+    return {board, pieceCleared}
+}
+
+function popPieces(board: boardType){
+    const clearableMap = getClearableMap(board)
+
     for (let i = 0; i < clearableMap.length; i++) {
         for (let j = 0; j < clearableMap[i].length; j++) {
             if(clearableMap[i][j] && board[i][j].piece.type != -777){
-                board[i][j].piece.type = 0
-                pieceCleared = true
+                board[i][j].piece.isPopping = true
             }
         }
     }
 
-    return {board, pieceCleared}
+    return board
 }
 
 function dropPieces(oldBoard: boardType){
@@ -123,7 +140,7 @@ function dropPieces(oldBoard: boardType){
                 let k = i - 1
                 let normalPieceFound = false
                 while( k >= 0 && !normalPieceFound){
-                    normalPieceFound = board[k][j].piece.type >= 0
+                    normalPieceFound = board[k][j].piece.type > 0
                     if(!normalPieceFound) k--
                 }
                 if(normalPieceFound){
@@ -161,18 +178,28 @@ export default function Game({width, height, availablePieces, initialBoard} : ga
         // newBoard[y+dy][x+dx].piece = newBoard[y][x].piece
         // newBoard[y][x].piece = temp
         swapPieces(newBoard, {x, y}, {x: x + dx, y: y + dy})
+        syncBoardPieces(newBoard)
+        setBoard(newBoard)
+        await wait(250)
+
+        newBoard = popPieces(_.cloneDeep(newBoard))
+        setBoard(newBoard)
+        await wait(1000)
+
         let result = clearPieces(newBoard)
         while(result.pieceCleared){
             newBoard = result.board
             syncBoardPieces(newBoard)
             setBoard(newBoard)
             await wait(250)
+            
             newBoard = dropPieces(newBoard)
             syncBoardPieces(newBoard)
             setBoard(newBoard)
             await wait(250)
 
             newBoard = fillAllZero(newBoard, availablePieces)
+            syncBoardPieces(newBoard)
             setBoard(newBoard)
             await wait(250)
 
@@ -180,6 +207,10 @@ export default function Game({width, height, availablePieces, initialBoard} : ga
             // setBoard(newBoard)
             // await wait(500)
 
+            newBoard = popPieces(_.cloneDeep(newBoard))
+            setBoard(newBoard)
+            await wait(1000)
+    
             result = clearPieces(newBoard)
         }
         // newBoard = clearPieces(newBoard).board
