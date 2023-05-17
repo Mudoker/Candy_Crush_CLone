@@ -15,7 +15,7 @@ export default function Home() {
     [ 0, 0, 0, 0, 0],
     [ 0, 0, 0, 0, 0],
     [ 0, 0, 0, -777, -777],
-    [ -1, -1, 0, 0, 0],
+    [ -1, -2, 0, 0, 0],
   ]
   const availablePieces = [1, 2, 3, 4]
   return <Game initialBoard={initialBoard} availablePieces={availablePieces} width={initialBoard[0].length} height={initialBoard.length}></Game>

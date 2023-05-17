@@ -51,6 +51,10 @@ function fillAllZero(board: boardType, availablePieces : Array<number>) : boardT
     }))
 }
 
+function isObstacle(board : boardType, x: number, y: number){
+    return x >= 0 && x < board[0].length && y >= 0 && y < board.length && board[y][x].piece.type > -777 && board[y][x].piece.type < 0
+}
+
 function getClearableMap(board : boardType){
     const height = board.length
     const width = board[0].length
@@ -122,7 +126,11 @@ function clearPieces(board: boardType){
             if(!board[i][j].piece.isPopping){
                 continue
             }
-            board[i][j].piece.type = 0
+            if(board[i][j].piece.type < 0 && board[i][j].piece.type > -777){
+                board[i][j].piece.type++    
+            }else{
+                board[i][j].piece.type = 0
+            }
             board[i][j].piece.isPopping = false
             pieceCleared = true
         }        
@@ -130,12 +138,28 @@ function clearPieces(board: boardType){
     return {board, pieceCleared}
 }
 
-function popPieces(board: boardType){
+function popPieces(board: boardType, popObstacle = true){
     const clearableMap = getClearableMap(board)
 
     for (let i = 0; i < clearableMap.length; i++) {
         for (let j = 0; j < clearableMap[i].length; j++) {
             board[i][j].piece.isPopping = board[i][j].piece.isPopping || clearableMap[i][j] && board[i][j].piece.type != -777
+        }
+    }
+    for (let i = 0; i < clearableMap.length; i++) {
+        for (let j = 0; j < clearableMap[i].length; j++) {
+            if(!board[i][j].piece.isPopping || board[i][j].piece.type < 0 || board[i][j].piece.type === -777 || !popObstacle){
+                continue
+            }
+            if(isObstacle(board, j, i - 1)){
+                board[i - 1][j].piece.isPopping = true
+            }else if(isObstacle(board, j, i + 1)){
+                board[i + 1][j].piece.isPopping = true
+            }else if(isObstacle(board, j - 1, i)){
+                board[i][j - 1].piece.isPopping = true
+            }else if(isObstacle(board, j + 1, i)){
+                board[i][j + 1].piece.isPopping = true
+            }
         }
     }
 
@@ -192,7 +216,6 @@ export default function Game({width, height, availablePieces, initialBoard, anim
         if(isProcessing){
             return
         }
-        setIsProcessing(true)
         let newBoard = _.cloneDeep(board)
         if(
             y + dy < 0 || y + dy >= height || x + dx < 0 || x + dx >= width ||
@@ -216,6 +239,8 @@ export default function Game({width, height, availablePieces, initialBoard, anim
                 setBoard(_.clone(newBoard))
                 return
         }
+
+        setIsProcessing(true)
 
         swapPieces(newBoard, {x, y}, {x: x + dx, y: y + dy})
         syncBoardPieces(newBoard)
@@ -252,7 +277,7 @@ export default function Game({width, height, availablePieces, initialBoard, anim
         let newBoard = fillAllZero( convertInitialBoard(initialBoard), availablePieces)
         let result
         do{
-            newBoard = popPieces(_.cloneDeep(newBoard))
+            newBoard = popPieces(_.cloneDeep(newBoard), false)
             result = clearPieces(newBoard)
             newBoard = result.board
             newBoard = dropPieces(newBoard)
