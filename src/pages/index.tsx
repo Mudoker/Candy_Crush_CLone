@@ -26,7 +26,7 @@ export default function Home() {
       <div className={`flex bg-orange-300 p-4`} style={{height: "100svh"}}>
         <div className={`m-auto flex flex-col border-4 border-orange-600 bg-orange-200 rounded-lg w-full max-w-md p-4`}>
           <img src={`/logo.svg`} />
-          <ButtonPrimary href={`/stage`}>Play</ButtonPrimary>
+          <ButtonPrimary href={`/game`}>Play</ButtonPrimary>
         </div>
       </div>
     </main>
