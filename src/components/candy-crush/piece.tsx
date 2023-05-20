@@ -31,7 +31,6 @@ export default function Piece({tileSize = 20, type, onSwipe = () => {}, id, x, y
         },
     }))
     
-    
     useEffect(() => {
         if(shakeDirection === ""){
             return
@@ -93,7 +92,7 @@ export default function Piece({tileSize = 20, type, onSwipe = () => {}, id, x, y
             },
         })
         setPosition({left: newLeft, top: newTop})
-    }, [x, y])
+    }, [x, y, tileSize])
     useEffect(() => {
         if(type === 0){
             sizeApi.start({

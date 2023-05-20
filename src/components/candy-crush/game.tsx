@@ -285,9 +285,7 @@ export default function Game({width, height, availablePieces, initialBoard, anim
     
     return (
         <AnimationSpeedContext.Provider value={animationSpeed}>
-            <div className={"flex flex-wrap relative"} style={{width: width * tileSize, height: height * tileSize}}>
-                <Board board={board} onSwipe={onPieceSwipe} tileSize={tileSize}></Board>
-            </div>
+            <Board board={board} onSwipe={onPieceSwipe} boardSize={500}></Board>
         </AnimationSpeedContext.Provider>
     )
 }

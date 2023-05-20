@@ -1,9 +1,12 @@
 import Piece from "./piece";
 import _ from "lodash";
 
-export default function Board({board, onSwipe, tileSize} : boardPropsType){
+export default function Board({board, onSwipe = () => {}, boardSize} : boardPropsType){
+    const height = board.length
+    const width = board[0]?.length
+    const tileSize = Math.floor(boardSize / Math.max(width, height))
     return (
-        <>
+        <div className={"flex flex-wrap relative"} style={{width: width * tileSize, height: height * tileSize}}>
             {
                 _.flatten(board).map(({piece}) => <Piece {...piece} onSwipe={onSwipe} tileSize={tileSize} key={piece.id}></Piece>)
             }
@@ -23,6 +26,6 @@ export default function Board({board, onSwipe, tileSize} : boardPropsType){
                     )
                 })
             }
-        </>
+        </div>
     )
 }

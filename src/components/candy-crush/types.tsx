@@ -10,8 +10,8 @@ type piecePropsType = {
 }
 type boardPropsType = {
     board: boardType; 
-    onSwipe: Function; 
-    tileSize: number;
+    onSwipe?: Function; 
+    boardSize: number;
 }
 
 type coordinateType = {x: number, y: number}
