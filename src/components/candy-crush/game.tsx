@@ -1,37 +1,20 @@
 import { createContext, useEffect, useRef, useState } from "react";
-import Piece, { piecePropsType } from "./piece";
-import CandyCrush from "@/class/CandyCrush";
+import Piece from "./piece";
 import _ from "lodash";
+import Board from "./board";
+import { AnimationSpeedContext, defaultAnimationSpeed } from "./animation-speed-context";
 
-export const defaultAnimationSpeed = {pop: 200, appear: 200, clear: 100, move: 200, shaking: 100}
-export const AnimationSpeedContext = createContext(defaultAnimationSpeed)
-
-type coordinateType = {x: number, y: number}
-type tileType = {
-    piece: piecePropsType,
-    blocked: boolean,
-}
-type animationSpeedType = {pop: number; appear: number; clear: number; move: number; shaking: number;}
-type boardType = tileType[][]
-type initialBoardType = number[][]
-type gamePropsType = {
-    availablePieces: number[];
-    width: number;
-    height: number;
-    initialBoard: initialBoardType;
-    animationSpeed?: animationSpeedType
-}
 async function waitFor(delay: number){
     return new Promise<void>((resolve, reject) => {
         setTimeout(() => resolve(), delay)
     })
 }
-function convertInitialBoard(initialBoard : initialBoardType) : boardType{
-    return initialBoard.map((row, y) => row.map((cell, x) => {
+export function convertInitialBoard(initialBoard : initialBoardType) : boardType{
+    return initialBoard.map((row, y) => row.map((type, x) => {
         return {
-            blocked: cell === -777,
+            blocked: type === -777,
             piece: {
-                type: cell, 
+                type, 
                 x, 
                 y, 
                 id: `piece${Math.floor(Math.random() * 1000000)}`,
@@ -193,9 +176,9 @@ function swapPieces(board : boardType, source : coordinateType, destination : co
 }
 function syncBoardPieces(board : boardType){
     board.forEach((row, y) => {
-        row.forEach((piece, x) => {
-            piece.piece.x = x
-            piece.piece.y = y
+        row.forEach((tile, x) => {
+            tile.piece.x = x
+            tile.piece.y = y
         })
     })
 }
@@ -212,7 +195,7 @@ export default function Game({width, height, availablePieces, initialBoard, anim
     const [tileSize, setTileSize] = useState(100)
     const [isProcessing, setIsProcessing] = useState(false)
     const [board, setBoard] = useState<boardType>([])
-    const moveBro = async function(x: number, y: number, {dx = 0, dy = 0} : {dx? : number; dy?: number}){
+    const onPieceSwipe = async function(x: number, y: number, {dx = 0, dy = 0} : {dx? : number; dy?: number}){
         if(isProcessing){
             return
         }
@@ -286,8 +269,9 @@ export default function Game({width, height, availablePieces, initialBoard, anim
         syncBoardPieces(newBoard)
         setBoard(newBoard)
     }, [initialBoard])
+
     useEffect(() => {
-        function handleResize(){
+        function calculateTileSize(){
             if(!tilesContainer.current){
                 return
             }
@@ -295,32 +279,14 @@ export default function Game({width, height, availablePieces, initialBoard, anim
             let size = referenceSize / Math.min(width, height)
             setTileSize(Math.min(size, 75));
         }
-        handleResize()
-        window.addEventListener("resize", handleResize)
+        calculateTileSize()
+        window.addEventListener("resize", calculateTileSize)
     }, [])
     
     return (
         <AnimationSpeedContext.Provider value={animationSpeed}>
             <div className={"flex flex-wrap relative"} style={{width: width * tileSize, height: height * tileSize}}>
-                {
-                    _.flatten(board).map(({piece}) => <Piece {...piece} onSwipe={moveBro} tileSize={tileSize} key={piece.id}></Piece>)
-                }
-                {
-                    _.zip(...board).map((row, i) => {
-                        return (
-                            <div key={i}>
-                                {
-                                    row.map((cell, j) => {
-                                        if(cell?.blocked){
-                                            return <div key={j} className='bg-boardBorder border-boardBorder border-8 text-black z-10 relative' style={{width: tileSize, height: tileSize}}></div>
-                                        }
-                                        return <div key={j} className='bg-tile border-tileBorder border-4 text-black' style={{width: tileSize, height: tileSize}}></div>
-                                    })
-                                }
-                            </div>
-                        )
-                    })
-                }
+                <Board board={board} onSwipe={onPieceSwipe} tileSize={tileSize}></Board>
             </div>
         </AnimationSpeedContext.Provider>
     )

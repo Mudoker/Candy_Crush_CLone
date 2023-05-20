@@ -1,18 +1,7 @@
 import { useContext, useEffect, useState } from "react"
 import { useSwipeable } from "react-swipeable"
 import { animated, useSpring } from '@react-spring/web'
-import { AnimationSpeedContext } from "./game";
-
-export type piecePropsType = {
-    type: number;
-    x: number;
-    y: number;
-    id: string;
-    isPopping?: boolean;
-    shakeDirection?: string;
-    tileSize?: number;
-    onSwipe?: Function;
-}
+import { AnimationSpeedContext } from "./animation-speed-context"
 
 export function createEmptyPieceProps() : piecePropsType{
     return {
@@ -23,7 +12,7 @@ export function createEmptyPieceProps() : piecePropsType{
     }
 }
 
-export default function Piece({tileSize = 20, type, onSwipe, id, x, y, isPopping = false, shakeDirection = ""} : piecePropsType){
+export default function Piece({tileSize = 20, type, onSwipe = () => {}, id, x, y, isPopping = false, shakeDirection = ""} : piecePropsType){
     const animationSpeed = useContext(AnimationSpeedContext)
     const offset = tileSize * 0.125
     // const [size, setSize] = useState(0)
