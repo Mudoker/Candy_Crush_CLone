@@ -39,7 +39,7 @@ export default function GamePage(){
             <Carousel onChange={setSelectedIndex} showIndicators={false} showThumbs={false} showStatus={false}>
               {
                 availableStages.map((availableStage, i) => (
-                  <div className={`flex flex-col items-center justify-center`} key={i}>
+                  <div className={`flex flex-col items-center justify-center h-full`} key={i}>
                     <div className={`bg-orange-50 border-orange-600 border-4 rounded-lg text-orange-600 mb-2`}>
                       <p className="text-xl font-bold mb-2">Target</p>
                       <div className="flex flex-wrap items-center justify-center">

@@ -190,11 +190,15 @@ function isMoveLegal(board : boardType, source : coordinateType, destination : c
     return map.findIndex(e => e === true) >= 0
 }
 
-export default function Game({width, height, availablePieces, initialBoard, animationSpeed = defaultAnimationSpeed} : gamePropsType){
+export default function Game({availablePieces, initialBoard, animationSpeed = defaultAnimationSpeed, goals, moveCount} : gamePropsType){
     const tilesContainer = useRef<HTMLDivElement>(null)
-    const [tileSize, setTileSize] = useState(100)
+    const [boardSize, setBoardSize] = useState(100)
     const [isProcessing, setIsProcessing] = useState(false)
     const [board, setBoard] = useState<boardType>([])
+    const [movesRemaining, setMovesRemaining] = useState(moveCount)
+    const [piecesDestroyed, setPiecesDestroyed] = useState({})
+    const width = board[0]?.length
+    const height = board.length
     const onPieceSwipe = async function(x: number, y: number, {dx = 0, dy = 0} : {dx? : number; dy?: number}){
         if(isProcessing){
             return
@@ -275,17 +279,18 @@ export default function Game({width, height, availablePieces, initialBoard, anim
             if(!tilesContainer.current){
                 return
             }
-            const referenceSize = Math.min(tilesContainer.current.offsetWidth)
-            let size = referenceSize / Math.min(width, height)
-            setTileSize(Math.min(size, 75));
+            const referenceSize = Math.min(tilesContainer.current.offsetWidth, tilesContainer.current.offsetHeight)
+            // let size = referenceSize / Math.min(width, height)
+            setBoardSize(referenceSize);
         }
         calculateTileSize()
         window.addEventListener("resize", calculateTileSize)
     }, [])
-    
     return (
         <AnimationSpeedContext.Provider value={animationSpeed}>
-            <Board board={board} onSwipe={onPieceSwipe} boardSize={500}></Board>
+            <div ref={tilesContainer} className="w-full">
+                <Board board={board} onSwipe={onPieceSwipe} boardSize={boardSize}></Board>
+            </div>
         </AnimationSpeedContext.Provider>
     )
 }

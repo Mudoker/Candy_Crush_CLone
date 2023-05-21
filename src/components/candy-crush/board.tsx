@@ -3,7 +3,7 @@ import _ from "lodash";
 
 export default function Board({board, onSwipe = () => {}, boardSize} : boardPropsType){
     const height = board.length
-    const width = board[0]?.length
+    const width = board[0] ? board[0].length : 0
     const tileSize = Math.floor(boardSize / Math.max(width, height))
     return (
         <div className={"flex flex-wrap relative"} style={{width: width * tileSize, height: height * tileSize}}>

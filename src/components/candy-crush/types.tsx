@@ -24,8 +24,10 @@ type boardType = tileType[][]
 type initialBoardType = number[][]
 type gamePropsType = {
     availablePieces: number[];
-    width: number;
-    height: number;
+    // width: number;
+    // height: number;
     initialBoard: initialBoardType;
-    animationSpeed?: animationSpeedType
+    animationSpeed?: animationSpeedType;
+    moveCount: number;
+    goals: {[key : string] : number};
 }
