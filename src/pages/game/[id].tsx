@@ -18,13 +18,11 @@ export default function Page(){
     init()
   }, [id])
   return (
-    <main>
-      <div className={`flex bg-orange-300 p-4`} style={{minHeight: "100svh"}}>
-        {
-          !!stage ? <Game availablePieces={stage.availablePieces} initialBoard={stage.board} moveCount={stage.moveCount} goals={stage.goals}></Game>
-          : null
-        }
-      </div>
+    <main className="bg-orange-300" style={{minHeight: "100svh"}}>
+      {
+        !!stage ? <Game availablePieces={stage.availablePieces} initialBoard={stage.board} moveCount={stage.moveCount} goals={stage.goals}></Game>
+        : null
+      }
     </main>
   )
 }

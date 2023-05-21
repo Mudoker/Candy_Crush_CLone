@@ -8,17 +8,17 @@ export type availableStageType = {
 export const availableStages : availableStageType[] = [
   {
     board: [
-      [ -777, 0, 0, 0, 0],
-      [ -777, 0, 0, 0, 0],
-      [ -777, 0, 0, 0, 0],
-      [ 0, 0, 0, 0, 0],
-      [ 0, 0, 0, 0, 0],
-      [ 0, 0, 0, -777, -777],
-      [ -1, -2, 0, 0, 0],
+      [ -777, 0, 0, 0, 0, 0, -777],
+      [ -777, 0, 0, 0, 0, 0, 0],
+      [ -777, 0, 0, 0, 0, 0, 0],
+      [ 0, 0, 0, 0, 0, 0, -777],
+      [ 0, 0, 0, 0, 0, 0, -777],
+      [ 0, 0, 0, -777, -777, 0, -777],
+      [ -1, -2, 0, 0, 0, 0, -777],
     ],
-    moveCount: 30,
-    goals: {"1" : 10, "2" : 10, "3" : 10},
-    availablePieces: [1, 2, 3],
+    moveCount: 2,
+    goals: {"1" : 10, "2" : 10},
+    availablePieces: [1, 2, 3, 4],
   },
   {
     board: [
@@ -30,7 +30,7 @@ export const availableStages : availableStageType[] = [
     ],
     moveCount: 30,
     goals: {"1" : 10, "2" : 10, "3" : 10},
-    availablePieces: [1, 2, 3],
+    availablePieces: [1, 2, 3, 4],
   }
 ]
 
@@ -45,7 +45,10 @@ export async function fetchAvailableStages(){
   })
 }
 
-export async function fetchStage(id : number){
+export async function fetchStage(id : any){
+  if(parseInt(id) < 0){
+    return
+  }
   return new Promise<{success: boolean, stage: availableStageType}>((resolve, reject) => {
     setTimeout(() => {
       resolve({
