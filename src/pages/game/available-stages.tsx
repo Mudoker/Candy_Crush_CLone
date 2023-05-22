@@ -16,7 +16,7 @@ export const availableStages : availableStageType[] = [
       [ 0, 0, 0, -777, -777, 0, -777],
       [ -1, -2, 0, 0, 0, 0, -777],
     ],
-    moveCount: 2,
+    moveCount: 20,
     goals: {"1" : 10, "2" : 10},
     availablePieces: [1, 2, 3, 4],
   },
@@ -36,12 +36,12 @@ export const availableStages : availableStageType[] = [
 
 export async function fetchAvailableStages(){
   return new Promise<{success: boolean, availableStages: availableStageType[]}>((resolve, reject) => {
-    setTimeout(() => {
+    // setTimeout(() => {
       resolve({
         success: true,
         availableStages,
       })
-    }, 1000)
+    // }, 1000)
   })
 }
 
@@ -50,11 +50,11 @@ export async function fetchStage(id : any){
     return
   }
   return new Promise<{success: boolean, stage: availableStageType}>((resolve, reject) => {
-    setTimeout(() => {
+    // setTimeout(() => {
       resolve({
         success: true,
         stage: availableStages[id],
       })
-    }, 1000)
+    // }, 1000)
   })
 }
