@@ -12,7 +12,7 @@ export function createEmptyPieceProps() : piecePropsType{
     }
 }
 
-export default function Piece({tileSize = 20, type, onSwipe = () => {}, id, x, y, isPopping = false, shakeDirection = ""} : piecePropsType){
+export default function Piece({tileSize = 20, type, onMove = () => {}, onClick = () => {}, id, x, y, isPopping = false, shakeDirection = ""} : piecePropsType){
     const animationSpeed = useContext(AnimationSpeedContext)
     const offset = tileSize * 0.125
     // const [size, setSize] = useState(0)
@@ -115,7 +115,7 @@ export default function Piece({tileSize = 20, type, onSwipe = () => {}, id, x, y
         }
     }, [type])
     const move = function(dx: number, dy: number){
-        onSwipe(x, y, {dx, dy})
+        onMove({x, y}, {dx, dy})
     }
     
     const handlers = useSwipeable({
@@ -124,5 +124,6 @@ export default function Piece({tileSize = 20, type, onSwipe = () => {}, id, x, y
         onSwipedUp: (eventData) => move(0, -1),
         onSwipedDown: (eventData) => move(0, 1),
     });
-    return <animated.img {...handlers} id={id} src={`/pieces/piece-${type}.svg`} className='absolute' style={{...sizeSprings, ...positionSprings, width: size, height: size}}></animated.img>
+    
+    return <animated.img {...handlers} id={id} src={`/pieces/piece-${type}.svg`} className='absolute' style={{...sizeSprings, ...positionSprings, width: size, height: size}} onClick={() => onClick(x, y)}></animated.img>
 }

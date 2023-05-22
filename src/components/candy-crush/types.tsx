@@ -6,11 +6,12 @@ type piecePropsType = {
     isPopping?: boolean;
     shakeDirection?: string;
     tileSize?: number;
-    onSwipe?: Function;
+    onMove?: Function;
+    onClick?: Function;
 }
 type boardPropsType = {
     board: boardType; 
-    onSwipe?: Function; 
+    onMove?: Function; 
     boardSize: number;
 }
 
@@ -30,4 +31,5 @@ type gamePropsType = {
     animationSpeed?: animationSpeedType;
     moveCount: number;
     goals: {[key : string] : number};
+    onGameFinished: Function;
 }
