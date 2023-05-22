@@ -62,7 +62,7 @@ export default function Piece({tileSize = 20, type, onSwipe = () => {}, id, x, y
         })
     }, [shakeDirection])
     useEffect(() => {
-        if(isPopping){
+        if(isPopping && type > 0){
             sizeApi.start({
                 from: { transform : `scale(1)` },
                 to: [
