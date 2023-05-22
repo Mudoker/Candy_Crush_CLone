@@ -21,14 +21,14 @@ export default function Page(){
     init()
   }, [id])
   return (
-    <main className="bg-orange-300" style={{minHeight: "100svh"}}>
+    <main className="bg-orange-300 flex">
       <Modal
         isOpen={endgameStatus !== ""}
         contentLabel="Example Modal"
         style={{
           overlay: {backgroundColor: 'rgba(0, 0, 0, 0.75)', display: 'flex'}, 
         }}
-        className={`m-auto border-orange-600 rounded-xl border-4 bg-orange-200 flex items-center justify-center flex-col px-20 py-5 outline-none`}
+        className={`m-auto border-orange-600 rounded-xl border-4 bg-orange-200 flex items-center justify-center flex-col px-10 py-5 outline-none`}
       >
         <div className="w-full text-3xl font-bold text-center mb-5 text-orange-600">
           { endgameStatus === "win" ? 
@@ -42,10 +42,14 @@ export default function Page(){
         </div>
         <ButtonPrimary className={`text-3xl`} onClick={() => router.back()}>Back</ButtonPrimary>
       </Modal>
-      {
-        !!stage ? <Game onGameFinished={setEndgameStatus} availablePieces={stage.availablePieces} initialBoard={stage.board} moveCount={stage.moveCount} goals={stage.goals}></Game>
-        : null
-      }
+      <div className="m-auto flex flex-col border-4 border-orange-600 bg-orange-200 rounded-lg w-full max-w-md">
+        <div className="" style={{minHeight: "100svh"}}>
+          {
+            !!stage ? <Game onGameFinished={setEndgameStatus} availablePieces={stage.availablePieces} initialBoard={stage.board} moveCount={stage.moveCount} goals={stage.goals}></Game>
+            : null
+          }
+        </div>
+      </div>
     </main>
   )
 }
