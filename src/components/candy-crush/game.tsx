@@ -197,7 +197,24 @@ function isMoveLegal(board : boardType, source : coordinateType, destination : c
     return map.findIndex(e => e === true) >= 0
 }
 
-export default function Game({availablePieces, initialBoard, animationSpeed = defaultAnimationSpeed, goals, moveCount} : gamePropsType){
+function getObjectDifferences(goals : {[key: string] : number}, piecesCleared : {[key: string] : number}){
+    const remainingGoals = Object.keys(goals).reduce((accumulator : {[key : string] : number}, piece) => {
+        accumulator[piece] = goals[piece] - piecesCleared[piece];
+        return accumulator;
+    }, {})
+    return remainingGoals
+}
+function allGoalsReached(goals : {[key: string] : number}, piecesCleared : {[key: string] : number}){
+    const remainingGoals = getObjectDifferences(goals, piecesCleared)
+    for (const i in remainingGoals) {
+        if(remainingGoals[i] > 0){
+            return false
+        }
+    }
+    return true
+}
+
+export default function Game({availablePieces, initialBoard, animationSpeed = defaultAnimationSpeed, goals, moveCount, onGameFinished = function(){}} : gamePropsType){
     const tilesContainer = useRef<HTMLDivElement>(null)
     const [boardSize, setBoardSize] = useState(100)
     const [isProcessing, setIsProcessing] = useState(false)
@@ -207,12 +224,11 @@ export default function Game({availablePieces, initialBoard, animationSpeed = de
     // console.log(piecesCleared)
     const width = board[0]?.length
     const height = board.length
+
+    let remainingGoals = getObjectDifferences(goals, piecesCleared)
+    
     const onPieceSwipe = async function(x: number, y: number, {dx = 0, dy = 0} : {dx? : number; dy?: number}){
-        if(movesLeft <= 0){
-            alert("Entek woi")
-            return
-        }
-        if(isProcessing){
+        if(isProcessing || movesLeft <= 0 || allGoalsReached(goals, piecesCleared)){
             return
         }
         let newBoard = _.cloneDeep(board)
@@ -280,6 +296,9 @@ export default function Game({availablePieces, initialBoard, animationSpeed = de
         } while(result.pieceCleared)
 
         setIsProcessing(false)
+        if(allGoalsReached(goals, newPiecesCleared)){
+            onGameFinished()
+        }
     }
     
     useEffect(() => {
@@ -312,10 +331,6 @@ export default function Game({availablePieces, initialBoard, animationSpeed = de
         setPiecesCleared(newPiecesCleared)
         window.addEventListener("resize", calculateTileSize)
     }, [])
-    const remainingGoals = Object.keys(goals).reduce((accumulator : {[key : string] : number}, piece) => {
-        accumulator[piece] = goals[piece] - piecesCleared[piece];
-        return accumulator;
-    }, {});
     return (
         <AnimationSpeedContext.Provider value={animationSpeed}>
             <div className="border-b-4 border-x-2 border-orange-600 rounded-b-xl p-4 flex">
