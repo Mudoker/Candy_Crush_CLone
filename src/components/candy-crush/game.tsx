@@ -344,7 +344,7 @@ export default function Game({availablePieces, initialBoard, animationSpeed = de
     }, [])
     return (
         <AnimationSpeedContext.Provider value={animationSpeed}>
-            <div className="border-b-4 border-x-2 border-orange-600 rounded-b-xl p-4 flex">
+            <div className="border-b-4 border-orange-600 rounded-b-xl px-4 py-10 flex flex-wrap">
                 <div className={`mr-auto text-center`}>
                     <div>
                         Targets
@@ -355,7 +355,14 @@ export default function Game({availablePieces, initialBoard, animationSpeed = de
                                 return (
                                     <div key={i} className="h-full flex items-center text-md mx-auto">
                                         <img src={`/pieces/piece-${piece}.svg`} className="h-3/5"/>
-                                        <div>{remainingGoals[piece]}</div>
+                                        <div>
+                                            {
+                                                remainingGoals[piece] <= 0 ? 
+                                                <img src="/checkmark.svg" className={`w-4`} />
+                                                :
+                                                remainingGoals[piece]
+                                            }
+                                        </div>
                                     </div>
                                 )
                             })
