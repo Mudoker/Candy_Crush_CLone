@@ -1,7 +1,7 @@
 import Game from "@/components/candy-crush/game";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { availableStageType, fetchStage } from "./available-stages";
+import { availableStageType, fetchStage } from "../../components/available-stages";
 import Modal from 'react-modal';
 import ButtonPrimary from "@/components/button-primary";
 

@@ -4,7 +4,7 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import React, {useEffect, useRef, useState} from 'react'
 import { convertInitialBoard } from "@/components/candy-crush/game";
-import { availableStageType, fetchAvailableStages } from "./available-stages";
+import { availableStageType, fetchAvailableStages } from "../../components/available-stages";
 
 export default function GamePage(){
   const [availableStages, setAvailableStages] = useState<availableStageType[]>([])
