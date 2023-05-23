@@ -31,6 +31,18 @@ export const availableStages : availableStageType[] = [
     moveCount: 30,
     goals: {"1" : 10, "2" : 10, "3" : 10},
     availablePieces: [1, 2, 3, 4],
+  },
+  {
+    board: [
+      [ 0, 0, 0, 0, 0],
+      [ 0, 0, 0, 0, 0],
+      [ 0, 0, -1, -1, -1],
+      [ 0, 0, -1, -1, -1],
+      [ 0, 0, -1, -1, -1],
+    ],
+    moveCount: 20,
+    goals: {"-1" : 9, "2" : 10},
+    availablePieces: [1, 2, 3, 4],
   }
 ]
 
