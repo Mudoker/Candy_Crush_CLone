@@ -344,7 +344,7 @@ export default function Game({availablePieces, initialBoard, animationSpeed = de
     }, [])
     return (
         <AnimationSpeedContext.Provider value={animationSpeed}>
-            <div className="border-b-4 border-orange-600 rounded-b-xl px-4 py-10 flex flex-wrap">
+            <div className="border-b-4 border-orange-600 rounded-b-xl px-4 py-10 flex flex-wrap mb-6">
                 <div className={`mr-auto text-center`}>
                     <div>
                         Targets
@@ -379,7 +379,7 @@ export default function Game({availablePieces, initialBoard, animationSpeed = de
                 </div>
             </div>
             <div className={`flex p-4`} style={{minHeight: "50svh"}}>
-                <div ref={tilesContainer} className="w-full">
+                <div ref={tilesContainer} className="w-full flex justify-center items-center">
                     <Board board={board} onMove={move} boardSize={boardSize}></Board>
                 </div>
             </div>
