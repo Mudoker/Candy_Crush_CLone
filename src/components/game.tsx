@@ -20,7 +20,7 @@ export default function Game({candyCrush} : {candyCrush: CandyCrush}) {
     window.addEventListener("resize", handleResize)
   }, []);
 
-  const swipeHandler = (prop) => { 
+  const swipeHandler = (prop : any) => { 
     candyCrush.swipe(prop)
     console.log(candyCrush.board)
   }
