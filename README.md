@@ -1,4 +1,4 @@
-App demo can be found here: [https://manuelhans.com:3000/](https://manuelhans.com:3000/). This project is inspired by Candy Crush Saga, Bejeweled, and Shopee Candy game.
+App demo can be found here: [http://manuelhans.com:3000/](http://manuelhans.com:3000/). This project is inspired by Candy Crush Saga, Bejeweled, and Shopee Candy game.
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
