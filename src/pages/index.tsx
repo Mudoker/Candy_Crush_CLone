@@ -1,14 +1,22 @@
-import Image from 'next/image'
+// import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import CandyCrush from '@/class/CandyCrush'
 import Game from '@/components/candy-crush/game'
 import ButtonPrimary from '@/components/button-primary'
+import images from '@/components/images-list'
+import { useEffect } from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
 
 
 // const candyCrush = new CandyCrush(7, 7)
 export default function Home() {
+  useEffect(function(){
+    images.forEach((image) => {
+      const img = new Image();
+      img.src = image;
+    });
+  }, [])
   // const initialBoard = [
   //   [ -777, 0, 0, 0, 0],
   //   [ -777, 0, 0, 0, 0],
