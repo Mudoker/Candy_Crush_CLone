@@ -1,8 +1,7 @@
 import { useSwipeable } from 'react-swipeable';
-import CandyCrushPiece from '@/class/CandyCrushPiece';
 import { useEffect, useState } from 'react';
 
-export default function Piece({candyCrushPiece, swipeHandler, tileSize} : {candyCrushPiece : CandyCrushPiece | undefined | null, swipeHandler: Function, tileSize: number}) : JSX.Element{
+export default function Piece({candyCrushPiece, swipeHandler, tileSize} ){
     if(!candyCrushPiece){
         return <></>
     }
@@ -15,7 +14,7 @@ export default function Piece({candyCrushPiece, swipeHandler, tileSize} : {candy
 
     const offset = tileSize * 0.125
     const size = tileSize * 0.75
-    
+
     const handlers = useSwipeable({
         onSwipedLeft: () => swipeHandler({candyCrushPiece, dx: -1, dy: 0}),
         onSwipedRight: () => swipeHandler({candyCrushPiece, dx: 1, dy: 0}),
