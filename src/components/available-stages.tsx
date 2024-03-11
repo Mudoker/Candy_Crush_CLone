@@ -17,8 +17,8 @@ export const availableStages : availableStageType[] = [
       [ 0, 0, 0, 0, 0, 0, -777],
     ],
     moveCount: 20,
-    goals: {"1" : 10, "2" : 10},
-    availablePieces: [1, 2, 3, 4],
+    goals: {"1" : 1, "2" : 1},
+    availablePieces: [1, 2, 3, 4, 5, 6],
   },
   {
     board: [
@@ -30,7 +30,7 @@ export const availableStages : availableStageType[] = [
     ],
     moveCount: 30,
     goals: {"1" : 10, "2" : 10, "3" : 10},
-    availablePieces: [1, 2, 3, 4],
+    availablePieces: [1, 2, 3, 4, 5, 6],
   },
   {
     board: [
@@ -42,7 +42,7 @@ export const availableStages : availableStageType[] = [
     ],
     moveCount: 20,
     goals: {"-1" : 9, "2" : 10},
-    availablePieces: [1, 2, 3, 4],
+    availablePieces: [1, 2, 3, 4, 5, 6],
   }
 ]
 

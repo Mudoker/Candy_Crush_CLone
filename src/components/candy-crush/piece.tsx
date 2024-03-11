@@ -12,12 +12,10 @@ export function createEmptyPieceProps() : piecePropsType{
     }
 }
 
-export default function Piece({tileSize = 20, type, onMove = () => {}, onClick = () => {}, id, x, y, isPopping = false, shakeDirection = ""} : piecePropsType){
+export default function Piece({tileSize = 50, type, onMove = () => {}, onClick = () => {}, id, x, y, isPopping = false, shakeDirection = ""} : piecePropsType){
     const animationSpeed = useContext(AnimationSpeedContext)
     const offset = tileSize * 0.125
-    // const [size, setSize] = useState(0)
     const size = tileSize * 0.75
-    // const [scale, setScale] = useState(0)
     const [{left, top}, setPosition] = useState({left: x * tileSize + offset, top: y * tileSize + offset})
 
     const [positionSprings, positionApi] = useSpring(() => ({

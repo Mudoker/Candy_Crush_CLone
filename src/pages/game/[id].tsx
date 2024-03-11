@@ -10,6 +10,7 @@ export default function Page(){
   const [stage, setStage] = useState<availableStageType>()
   const [endgameStatus, setEndgameStatus] = useState("")
   const id = router.query
+
   useEffect(() => {
     async function init(){
       const response = await fetchStage(router.query.id)
@@ -19,28 +20,29 @@ export default function Page(){
       setStage(response.stage)
     }
     init()
-  }, [id])
+  }, [id, router.query.id])
+
   return (
     <main className="bg-orange-300 flex">
       <Modal
         isOpen={endgameStatus !== ""}
         contentLabel="Example Modal"
         style={{
-          overlay: {backgroundColor: 'rgba(0, 0, 0, 0.75)', display: 'flex'}, 
+          overlay: {backgroundColor: 'rgba(0, 0, 0, 0.75)', display: 'flex'},
         }}
         className={`m-auto border-orange-600 rounded-xl border-4 bg-orange-200 flex items-center justify-center flex-col px-10 py-5 outline-none`}
       >
         <div className="w-full text-3xl font-bold text-center mb-5 text-orange-600">
-          { endgameStatus === "win" ? 
+          { endgameStatus === "win" ?
             <>
-              <img src={`/thumbs.svg`} /> 
+              <img src={`/thumbs.svg`} />
               <div>You win</div>
             </> : <>
-              <img src={`/thumbs.svg`} className="rotate-180"/> 
+              <img src={`/thumbs.svg`} className="rotate-180"/>
               <div>You lose</div>
             </>}
         </div>
-        <ButtonPrimary className={`text-3xl`} onClick={() => router.back()}>Back</ButtonPrimary>
+        <ButtonPrimary className={`text-3xl`} onClick={() => router.replace('/')}>Back</ButtonPrimary>
       </Modal>
       <div className="m-auto flex flex-col border-4 border-orange-600 bg-orange-200 rounded-lg w-full max-w-md">
         <div className="" style={{minHeight: "100svh"}}>

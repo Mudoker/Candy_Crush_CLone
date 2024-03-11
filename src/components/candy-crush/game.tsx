@@ -221,17 +221,16 @@ function allGoalsReached(goals : {[key: string] : number}, piecesCleared : {[key
 
 export default function Game({availablePieces, initialBoard, animationSpeed = defaultAnimationSpeed, goals, moveCount, onGameFinished = function(){}} : gamePropsType){
     const tilesContainer = useRef<HTMLDivElement>(null)
-    const [boardSize, setBoardSize] = useState(100)
+    const [boardSize, setBoardSize] = useState(1000)
     const [isProcessing, setIsProcessing] = useState(false)
     const [board, setBoard] = useState<boardType>([])
     const [movesLeft, setMovesLeft] = useState(moveCount)
     const [piecesCleared, setPiecesCleared] = useState<{[key : string] : number}>({})
-    // console.log(piecesCleared)
+
     const width = board[0]?.length
     const height = board.length
 
     let remainingGoals = getObjectDifferences(goals, piecesCleared)
-
     const move = async function({x, y} : coordinateType, {dx = 0, dy = 0} : {dx? : number; dy?: number}){
         if(isProcessing || movesLeft <= 0 || allGoalsReached(goals, piecesCleared)){
             return
@@ -324,7 +323,7 @@ export default function Game({availablePieces, initialBoard, animationSpeed = de
         }while(result.pieceCleared)
         syncBoardPieces(newBoard)
         setBoard(newBoard)
-    }, [initialBoard])
+    }, [availablePieces, initialBoard])
 
     useEffect(() => {
         function calculateTileSize(){
@@ -332,7 +331,7 @@ export default function Game({availablePieces, initialBoard, animationSpeed = de
                 return
             }
             const referenceSize = Math.min(tilesContainer.current.offsetWidth, tilesContainer.current.offsetHeight)
-            // let size = referenceSize / Math.min(width, height)
+
             setBoardSize(referenceSize);
         }
         calculateTileSize()
@@ -344,7 +343,7 @@ export default function Game({availablePieces, initialBoard, animationSpeed = de
     }, [])
     return (
         <AnimationSpeedContext.Provider value={animationSpeed}>
-            <div className="border-b-4 border-orange-600 rounded-b-xl px-4 py-10 flex flex-wrap mb-6">
+            <div className=" border-b-4 border-orange-600 rounded-b-xl px-4 py-10 flex flex-wrap mb-6">
                 <div className={`mr-auto text-center`}>
                     <div>
                         Targets
@@ -352,9 +351,10 @@ export default function Game({availablePieces, initialBoard, animationSpeed = de
                     <div className="rounded-3xl bg-orange-500 w-32 h-12 flex items-center justify-center">
                         {
                             Object.keys(goals).map((piece, i) => {
+                                console.log(piece)
                                 return (
                                     <div key={i} className="h-full flex items-center text-md mx-auto">
-                                        <img src={`/pieces/piece-${piece}.svg`} className="h-3/5"/>
+                                        <img src={`/pieces/piece-${piece}.png`} className="h-3/5"/>
                                         <div>
                                             {
                                                 remainingGoals[piece] <= 0 ?

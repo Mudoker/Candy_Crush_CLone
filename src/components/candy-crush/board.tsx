@@ -33,7 +33,7 @@ export default function Board({board, onMove = () => {}, boardSize} : boardProps
                             {
                                 row.map((cell, j) => {
                                     if(cell?.blocked){
-                                        return <div key={j} className='bg-boardBorder border-boardBorder border-8 text-black  relative' style={{width: tileSize, height: tileSize}}></div>
+                                        return <div key={j} className='bg-boardBorder border-boardBorder border-8 text-black relative' style={{width: tileSize, height: tileSize}}></div>
                                     }
                                     return <div key={j} className={`${tappedCoordinate.x === i && tappedCoordinate.y === j ? "bg-yellow-400" : "bg-tile"} border-tileBorder border-4 text-black`} style={{width: tileSize, height: tileSize}}></div>
                                 })
