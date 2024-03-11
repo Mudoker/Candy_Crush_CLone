@@ -19,7 +19,7 @@ export default function Piece({tileSize = 20, type, onMove = () => {}, onClick =
     const size = tileSize * 0.75
     // const [scale, setScale] = useState(0)
     const [{left, top}, setPosition] = useState({left: x * tileSize + offset, top: y * tileSize + offset})
-    
+
     const [positionSprings, positionApi] = useSpring(() => ({
         from: { x: left, y: top },
     }))
@@ -30,7 +30,7 @@ export default function Piece({tileSize = 20, type, onMove = () => {}, onClick =
             friction: 20,
         },
     }))
-    
+
     useEffect(() => {
         if(shakeDirection === ""){
             return
@@ -40,12 +40,12 @@ export default function Piece({tileSize = 20, type, onMove = () => {}, onClick =
             duration: animationSpeed.shaking
         }
         let to : {x?: number, y? : number}[] = []
-        
+
         const rightKeyframes = [{ x : left + tileSize * 0.1 }, { x : left - tileSize * 0.1 }, { x : left + tileSize * 0.1 }, { x : left - tileSize * 0.1 }]
         const leftKeyframes = rightKeyframes.slice().reverse()
         const downKeyframes = [{ y : top + tileSize * 0.1 }, { y : top - tileSize * 0.1 }, { y : top + tileSize * 0.1 }, { y : top - tileSize * 0.1 }]
         const upKeyframes = downKeyframes.slice().reverse()
-        
+
         if(shakeDirection === "right"){
             to = [...rightKeyframes, from]
         }else if(shakeDirection === "left"){
@@ -60,7 +60,8 @@ export default function Piece({tileSize = 20, type, onMove = () => {}, onClick =
             to,
             config
         })
-    }, [shakeDirection])
+    }, [animationSpeed.shaking, left, positionApi, shakeDirection, tileSize, top])
+
     useEffect(() => {
         if(isPopping && type > 0){
             sizeApi.start({
@@ -74,7 +75,8 @@ export default function Piece({tileSize = 20, type, onMove = () => {}, onClick =
                 },
             })
         }
-    }, [isPopping])
+    }, [animationSpeed.pop, isPopping, sizeApi, type])
+
     useEffect(() => {
         const newLeft = x * tileSize + offset
         const newTop = y * tileSize + offset
@@ -92,7 +94,8 @@ export default function Piece({tileSize = 20, type, onMove = () => {}, onClick =
             },
         })
         setPosition({left: newLeft, top: newTop})
-    }, [x, y, tileSize])
+    }, [x, y, tileSize, offset, positionApi, top, left, animationSpeed.move])
+
     useEffect(() => {
         if(type === 0){
             sizeApi.start({
@@ -113,17 +116,19 @@ export default function Piece({tileSize = 20, type, onMove = () => {}, onClick =
             })
             // setScale(1)
         }
-    }, [type])
+    }, [animationSpeed.appear, animationSpeed.clear, sizeApi, type])
+
     const move = function(dx: number, dy: number){
         onMove({x, y}, {dx, dy})
     }
-    
+
     const handlers = useSwipeable({
         onSwipedLeft: (eventData) => move(-1, 0),
         onSwipedRight: (eventData) => move(1, 0),
         onSwipedUp: (eventData) => move(0, -1),
         onSwipedDown: (eventData) => move(0, 1),
     });
-    
-    return <animated.img {...handlers} id={id} src={`/pieces/piece-${type}.svg`} className='absolute' style={{...sizeSprings, ...positionSprings, width: size, height: size}} onClick={() => onClick(x, y)}></animated.img>
+
+    return <animated.img {...handlers} id={id} src={`/pieces/piece-${type}.png`}
+     className='absolute' style={{...sizeSprings, ...positionSprings, width: size, height: size}} onClick={() => onClick(x, y)}></animated.img>
 }

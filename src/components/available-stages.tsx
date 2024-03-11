@@ -4,7 +4,7 @@ export type availableStageType = {
   goals: { [key : string] : number},
   availablePieces: number[],
 }
-  
+
 export const availableStages : availableStageType[] = [
   {
     board: [
@@ -14,7 +14,7 @@ export const availableStages : availableStageType[] = [
       [ 0, 0, 0, 0, 0, 0, -777],
       [ 0, 0, 0, 0, 0, 0, -777],
       [ 0, 0, 0, -777, -777, 0, -777],
-      [ -1, -2, 0, 0, 0, 0, -777],
+      [ 0, 0, 0, 0, 0, 0, -777],
     ],
     moveCount: 20,
     goals: {"1" : 10, "2" : 10},

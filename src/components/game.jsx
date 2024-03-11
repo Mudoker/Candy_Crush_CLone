@@ -18,7 +18,7 @@ export default function Game({ candyCrush }) {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [candyCrush.width]);
+  }, [candyCrush.width, tilesContainer]);
 
   const swipeHandler = (prop ) => {
     candyCrush.swipe(prop);

@@ -14,9 +14,9 @@ export function convertInitialBoard(initialBoard : initialBoardType) : boardType
         return {
             blocked: type === -777,
             piece: {
-                type, 
-                x, 
-                y, 
+                type,
+                x,
+                y,
                 id: `piece${Math.floor(Math.random() * 1000000)}`,
             }
         }
@@ -97,7 +97,7 @@ function getClearableMap(board : boardType){
     const clearableMapHorizontal = getClearableMapHorizontal(board)
     const clearableMapVertical = getClearableMapVertical(board)
     const clearableMapSquare = getClearableMapSquare(board)
-    
+
     const clearableMap = new Array(height).fill(0).map(() => Array(width).fill(false))
     for (let i = 0; i < clearableMap.length; i++) {
         for (let j = 0; j < clearableMap[i].length; j++) {
@@ -121,13 +121,13 @@ function clearPieces(board: boardType){
             pieceClearedCount[board[i][j].piece.type] ++
 
             if(board[i][j].piece.type < 0 && board[i][j].piece.type > -777){
-                board[i][j].piece.type++    
+                board[i][j].piece.type++
             }else{
                 board[i][j].piece.type = 0
             }
             board[i][j].piece.isPopping = false
             pieceCleared = true
-        }        
+        }
     }
     return {board, pieceClearedCount, pieceCleared}
 }
@@ -231,7 +231,7 @@ export default function Game({availablePieces, initialBoard, animationSpeed = de
     const height = board.length
 
     let remainingGoals = getObjectDifferences(goals, piecesCleared)
-    
+
     const move = async function({x, y} : coordinateType, {dx = 0, dy = 0} : {dx? : number; dy?: number}){
         if(isProcessing || movesLeft <= 0 || allGoalsReached(goals, piecesCleared)){
             return
@@ -239,9 +239,9 @@ export default function Game({availablePieces, initialBoard, animationSpeed = de
         let newBoard = _.cloneDeep(board)
         if(
             y + dy < 0 || y + dy >= height || x + dx < 0 || x + dx >= width ||
-            board[y][x].blocked || board[y + dy][x + dx].blocked || board[y][x].piece.type <= 0 || board[y + dy][x + dx].piece.type <= 0 || 
+            board[y][x].blocked || board[y + dy][x + dx].blocked || board[y][x].piece.type <= 0 || board[y + dy][x + dx].piece.type <= 0 ||
             !isMoveLegal(newBoard, {x, y}, {x: x + dx, y: y + dy}) ) {
-            
+
                 if(dy === 1){
                     newBoard[y][x].piece.shakeDirection = "down"
                 }else if(dy === -1){
@@ -311,7 +311,7 @@ export default function Game({availablePieces, initialBoard, animationSpeed = de
             onGameFinished("lose")
         }
     }
-    
+
     useEffect(() => {
         let newBoard = fillAllZero( convertInitialBoard(initialBoard), availablePieces)
         let result
@@ -357,7 +357,7 @@ export default function Game({availablePieces, initialBoard, animationSpeed = de
                                         <img src={`/pieces/piece-${piece}.svg`} className="h-3/5"/>
                                         <div>
                                             {
-                                                remainingGoals[piece] <= 0 ? 
+                                                remainingGoals[piece] <= 0 ?
                                                 <img src="/checkmark.svg" className={`w-4`} />
                                                 :
                                                 remainingGoals[piece]
