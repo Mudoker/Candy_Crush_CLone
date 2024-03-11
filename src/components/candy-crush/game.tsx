@@ -3,13 +3,14 @@ import Piece from "./piece";
 import _ from "lodash";
 import Board from "./board";
 import { AnimationSpeedContext, defaultAnimationSpeed } from "./animation-speed-context";
+import { GameState } from './game-state'
 
-async function waitFor(delay: number){
+async function waitFor(delay: number) {
     return new Promise<void>((resolve, reject) => {
         setTimeout(() => resolve(), delay)
     })
 }
-export function convertInitialBoard(initialBoard : initialBoardType) : boardType{
+export function convertInitialBoard(initialBoard: initialBoardType): boardType {
     return initialBoard.map((row, y) => row.map((type, x) => {
         return {
             blocked: type === -777,
@@ -22,9 +23,9 @@ export function convertInitialBoard(initialBoard : initialBoardType) : boardType
         }
     }))
 }
-function fillAllZero(board: boardType, availablePieces : Array<number>) : boardType{
+function fillAllZero(board: boardType, availablePieces: Array<number>): boardType {
     return board.map((row, y) => row.map((tile, x) => {
-        if(tile.piece.type === 0){
+        if (tile.piece.type === 0) {
             tile.piece = {
                 ...tile.piece,
                 type: availablePieces[Math.floor(Math.random() * availablePieces.length)],
@@ -34,28 +35,28 @@ function fillAllZero(board: boardType, availablePieces : Array<number>) : boardT
     }))
 }
 
-function isObstacle(board : boardType, x: number, y: number){
+function isObstacle(board: boardType, x: number, y: number) {
     return x >= 0 && x < board[0].length && y >= 0 && y < board.length && board[y][x].piece.type > -777 && board[y][x].piece.type < 0
 }
 
-function getClearableMapHorizontal(board : boardType){
+function getClearableMapHorizontal(board: boardType) {
     const height = board.length
     const width = board[0].length
     let clearableMap = new Array(height).fill(0).map(() => Array(width).fill(false))
 
     for (let i = 0; i < height; i++) {
         let j = 0
-        while (j < width){
-            if(board[i][j].piece.type <= 0){
+        while (j < width) {
+            if (board[i][j].piece.type <= 0) {
                 j++
                 continue
             }
             let k = j
-            while( k < width && board[i][j].piece.type === (board[i][k].piece.type)){
+            while (k < width && board[i][j].piece.type === (board[i][k].piece.type)) {
                 k++
             }
-            if(k - j > 2){
-                for(let l = j; l < k; l++){
+            if (k - j > 2) {
+                for (let l = j; l < k; l++) {
                     clearableMap[i][l] ||= board[i][l].piece.type > 0
                 }
             }
@@ -64,23 +65,23 @@ function getClearableMapHorizontal(board : boardType){
     }
     return clearableMap
 }
-function getClearableMapVertical(board : boardType){
+function getClearableMapVertical(board: boardType) {
     // @ts-ignore-start
-    const clearableMapHorizontal = getClearableMapHorizontal( _.zip(...board))
+    const clearableMapHorizontal = getClearableMapHorizontal(_.zip(...board))
     // @ts-ignore-end
     return _.zip(...clearableMapHorizontal)
 }
-function getClearableMapSquare(board : boardType){
+function getClearableMapSquare(board: boardType) {
     const height = board.length
     const width = board[0].length
     let clearableMap = new Array(height).fill(0).map(() => Array(width).fill(false))
 
-    for (let i = 0; i < height - 1; i++){
-        for(let j = 0; j < width - 1; j++){
-            if(board[i][j]?.piece.type <= 0){
+    for (let i = 0; i < height - 1; i++) {
+        for (let j = 0; j < width - 1; j++) {
+            if (board[i][j]?.piece.type <= 0) {
                 continue
             }
-            if(board[i][j].piece.type === (board[i][j + 1].piece.type) && board[i][j].piece.type === (board[i + 1][j].piece.type) && board[i][j].piece.type === (board[i + 1][j + 1].piece.type)){
+            if (board[i][j].piece.type === (board[i][j + 1].piece.type) && board[i][j].piece.type === (board[i + 1][j].piece.type) && board[i][j].piece.type === (board[i + 1][j + 1].piece.type)) {
                 clearableMap[i][j] ||= board[i][j].piece.type > 0
                 clearableMap[i][j + 1] ||= board[i][j].piece.type > 0
                 clearableMap[i + 1][j] ||= board[i][j].piece.type > 0
@@ -91,7 +92,7 @@ function getClearableMapSquare(board : boardType){
     return clearableMap
 }
 
-function getClearableMap(board : boardType){
+function getClearableMap(board: boardType) {
     const height = board.length
     const width = board[0].length
     const clearableMapHorizontal = getClearableMapHorizontal(board)
@@ -107,32 +108,32 @@ function getClearableMap(board : boardType){
     return clearableMap
 }
 
-function clearPieces(board: boardType){
+function clearPieces(board: boardType) {
     let pieceCleared = false
-    let pieceClearedCount : {[key: string] : number} = {}
+    let pieceClearedCount: { [key: string]: number } = {}
     for (let i = 0; i < board.length; i++) {
         for (let j = 0; j < board[i].length; j++) {
-            if(!board[i][j].piece.isPopping){
+            if (!board[i][j].piece.isPopping) {
                 continue
             }
-            if(!pieceClearedCount.hasOwnProperty(board[i][j].piece.type)){
+            if (!pieceClearedCount.hasOwnProperty(board[i][j].piece.type)) {
                 pieceClearedCount[board[i][j].piece.type] = 0
             }
-            pieceClearedCount[board[i][j].piece.type] ++
+            pieceClearedCount[board[i][j].piece.type]++
 
-            if(board[i][j].piece.type < 0 && board[i][j].piece.type > -777){
+            if (board[i][j].piece.type < 0 && board[i][j].piece.type > -777) {
                 board[i][j].piece.type++
-            }else{
+            } else {
                 board[i][j].piece.type = 0
             }
             board[i][j].piece.isPopping = false
             pieceCleared = true
         }
     }
-    return {board, pieceClearedCount, pieceCleared}
+    return { board, pieceClearedCount, pieceCleared }
 }
 
-function popPieces(board: boardType, popObstacle = true){
+function popPieces(board: boardType, popObstacle = true) {
     const clearableMap = getClearableMap(board)
 
     for (let i = 0; i < clearableMap.length; i++) {
@@ -142,16 +143,16 @@ function popPieces(board: boardType, popObstacle = true){
     }
     for (let i = 0; i < clearableMap.length; i++) {
         for (let j = 0; j < clearableMap[i].length; j++) {
-            if(!board[i][j].piece.isPopping || board[i][j].piece.type < 0 || board[i][j].piece.type === -777 || !popObstacle){
+            if (!board[i][j].piece.isPopping || board[i][j].piece.type < 0 || board[i][j].piece.type === -777 || !popObstacle) {
                 continue
             }
-            if(isObstacle(board, j, i - 1)){
+            if (isObstacle(board, j, i - 1)) {
                 board[i - 1][j].piece.isPopping = true
-            }else if(isObstacle(board, j, i + 1)){
+            } else if (isObstacle(board, j, i + 1)) {
                 board[i + 1][j].piece.isPopping = true
-            }else if(isObstacle(board, j - 1, i)){
+            } else if (isObstacle(board, j - 1, i)) {
                 board[i][j - 1].piece.isPopping = true
-            }else if(isObstacle(board, j + 1, i)){
+            } else if (isObstacle(board, j + 1, i)) {
                 board[i][j + 1].piece.isPopping = true
             }
         }
@@ -160,32 +161,32 @@ function popPieces(board: boardType, popObstacle = true){
     return board
 }
 
-function dropPieces(oldBoard: boardType){
+function dropPieces(oldBoard: boardType) {
     const board = _.cloneDeep(oldBoard)
     for (let i = board.length - 1; i >= 0; i--) {
         const row = board[i];
         for (let j = 0; j < row.length; j++) {
-            if(board[i][j].piece.type !== 0){
+            if (board[i][j].piece.type !== 0) {
                 continue
             }
             let k = i - 1
             let normalPieceFound = false
-            while( k >= 0 && !normalPieceFound){
+            while (k >= 0 && !normalPieceFound) {
                 normalPieceFound = board[k][j].piece.type > 0
-                if(!normalPieceFound) k--
+                if (!normalPieceFound) k--
             }
-            if(normalPieceFound){
-                swapPieces(board, {x: j, y: i}, {x: j, y: k})
+            if (normalPieceFound) {
+                swapPieces(board, { x: j, y: i }, { x: j, y: k })
             }
         }
     }
     return board
 }
 
-function swapPieces(board : boardType, source : coordinateType, destination : coordinateType){
+function swapPieces(board: boardType, source: coordinateType, destination: coordinateType) {
     [board[source.y][source.x].piece, board[destination.y][destination.x].piece] = [board[destination.y][destination.x].piece, board[source.y][source.x].piece]
 }
-function syncBoardPieces(board : boardType){
+function syncBoardPieces(board: boardType) {
     board.forEach((row, y) => {
         row.forEach((tile, x) => {
             tile.piece.x = x
@@ -193,7 +194,7 @@ function syncBoardPieces(board : boardType){
         })
     })
 }
-function isMoveLegal(board : boardType, source : coordinateType, destination : coordinateType){
+function isMoveLegal(board: boardType, source: coordinateType, destination: coordinateType) {
     const newBoard = _.cloneDeep(board)
     swapPieces(newBoard, source, destination)
     const map = _.flatten(getClearableMap(newBoard))
@@ -202,69 +203,69 @@ function isMoveLegal(board : boardType, source : coordinateType, destination : c
     return map.findIndex(e => e === true) >= 0
 }
 
-function getObjectDifferences(goals : {[key: string] : number}, piecesCleared : {[key: string] : number}){
-    const remainingGoals = Object.keys(goals).reduce((accumulator : {[key : string] : number}, piece) => {
+function getObjectDifferences(goals: { [key: string]: number }, piecesCleared: { [key: string]: number }) {
+    const remainingGoals = Object.keys(goals).reduce((accumulator: { [key: string]: number }, piece) => {
         accumulator[piece] = goals[piece] - piecesCleared[piece];
         return accumulator;
     }, {})
     return remainingGoals
 }
-function allGoalsReached(goals : {[key: string] : number}, piecesCleared : {[key: string] : number}){
+function allGoalsReached(goals: { [key: string]: number }, piecesCleared: { [key: string]: number }) {
     const remainingGoals = getObjectDifferences(goals, piecesCleared)
     for (const i in remainingGoals) {
-        if(remainingGoals[i] > 0){
+        if (remainingGoals[i] > 0) {
             return false
         }
     }
     return true
 }
 
-export default function Game({availablePieces, initialBoard, animationSpeed = defaultAnimationSpeed, goals, moveCount, onGameFinished = function(){}} : gamePropsType){
+export default function Game({ availablePieces, initialBoard, animationSpeed = defaultAnimationSpeed, goals, moveCount, onGameFinished = function () { } }: gamePropsType) {
     const tilesContainer = useRef<HTMLDivElement>(null)
     const [boardSize, setBoardSize] = useState(1000)
     const [isProcessing, setIsProcessing] = useState(false)
     const [board, setBoard] = useState<boardType>([])
     const [movesLeft, setMovesLeft] = useState(moveCount)
-    const [piecesCleared, setPiecesCleared] = useState<{[key : string] : number}>({})
+    const [piecesCleared, setPiecesCleared] = useState<{ [key: string]: number }>({})
 
     const width = board[0]?.length
     const height = board.length
 
     let remainingGoals = getObjectDifferences(goals, piecesCleared)
-    const move = async function({x, y} : coordinateType, {dx = 0, dy = 0} : {dx? : number; dy?: number}){
-        if(isProcessing || movesLeft <= 0 || allGoalsReached(goals, piecesCleared)){
+    const move = async function ({ x, y }: coordinateType, { dx = 0, dy = 0 }: { dx?: number; dy?: number }) {
+        if (isProcessing || movesLeft <= 0 || allGoalsReached(goals, piecesCleared)) {
             return
         }
         let newBoard = _.cloneDeep(board)
-        if(
+        if (
             y + dy < 0 || y + dy >= height || x + dx < 0 || x + dx >= width ||
             board[y][x].blocked || board[y + dy][x + dx].blocked || board[y][x].piece.type <= 0 || board[y + dy][x + dx].piece.type <= 0 ||
-            !isMoveLegal(newBoard, {x, y}, {x: x + dx, y: y + dy}) ) {
+            !isMoveLegal(newBoard, { x, y }, { x: x + dx, y: y + dy })) {
 
-                if(dy === 1){
-                    newBoard[y][x].piece.shakeDirection = "down"
-                }else if(dy === -1){
-                    newBoard[y][x].piece.shakeDirection = "up"
-                }else if(dx === 1){
-                    newBoard[y][x].piece.shakeDirection = "right"
-                }else if(dx === -1){
-                    newBoard[y][x].piece.shakeDirection = "left"
-                }
-                // newBoard[y][x].piece.shakeDirection = dy !== 0 ? "vertical" : "horizontal"
-                setBoard(newBoard)
-                await waitFor(animationSpeed.shaking)
+            if (dy === 1) {
+                newBoard[y][x].piece.shakeDirection = "down"
+            } else if (dy === -1) {
+                newBoard[y][x].piece.shakeDirection = "up"
+            } else if (dx === 1) {
+                newBoard[y][x].piece.shakeDirection = "right"
+            } else if (dx === -1) {
+                newBoard[y][x].piece.shakeDirection = "left"
+            }
+            // newBoard[y][x].piece.shakeDirection = dy !== 0 ? "vertical" : "horizontal"
+            setBoard(newBoard)
+            await waitFor(animationSpeed.shaking)
 
-                newBoard[y][x].piece.shakeDirection = ""
-                setBoard(_.clone(newBoard))
-                return
+            newBoard[y][x].piece.shakeDirection = ""
+            setBoard(_.clone(newBoard))
+            return
         }
 
         setIsProcessing(true)
 
-        const currentMovesLeft = movesLeft-1
+        const currentMovesLeft = movesLeft - 1
         setMovesLeft(currentMovesLeft)
 
-        swapPieces(newBoard, {x, y}, {x: x + dx, y: y + dy})
+        swapPieces(newBoard, { x, y }, { x: x + dx, y: y + dy })
         syncBoardPieces(newBoard)
         setBoard(newBoard)
         await waitFor(animationSpeed.move)
@@ -280,7 +281,7 @@ export default function Game({availablePieces, initialBoard, animationSpeed = de
             newBoard = result.board
             newPiecesCleared = _.clone(newPiecesCleared)
             for (const piece in result.pieceClearedCount) {
-                if(!newPiecesCleared.hasOwnProperty(piece)){
+                if (!newPiecesCleared.hasOwnProperty(piece)) {
                     newPiecesCleared[piece] = 0
                 }
                 newPiecesCleared[piece] += result.pieceClearedCount[piece]
@@ -299,35 +300,35 @@ export default function Game({availablePieces, initialBoard, animationSpeed = de
             syncBoardPieces(newBoard)
             setBoard(newBoard)
             await waitFor(animationSpeed.appear)
-        } while(result.pieceCleared)
+        } while (result.pieceCleared)
 
         console.log(newBoard.map(e => e.map(f => f.piece.type)))
 
         setIsProcessing(false)
-        if(allGoalsReached(goals, newPiecesCleared)){
+        if (allGoalsReached(goals, newPiecesCleared)) {
             onGameFinished("win")
-        }else if(currentMovesLeft <= 0){
+        } else if (currentMovesLeft <= 0) {
             onGameFinished("lose")
         }
     }
 
     useEffect(() => {
-        let newBoard = fillAllZero( convertInitialBoard(initialBoard), availablePieces)
+        let newBoard = fillAllZero(convertInitialBoard(initialBoard), availablePieces)
         let result
-        do{
+        do {
             newBoard = popPieces(_.cloneDeep(newBoard), false)
             result = clearPieces(newBoard)
             newBoard = result.board
             newBoard = dropPieces(newBoard)
             newBoard = fillAllZero(newBoard, availablePieces)
-        }while(result.pieceCleared)
+        } while (result.pieceCleared)
         syncBoardPieces(newBoard)
         setBoard(newBoard)
     }, [availablePieces, initialBoard])
 
     useEffect(() => {
-        function calculateTileSize(){
-            if(!tilesContainer.current){
+        function calculateTileSize() {
+            if (!tilesContainer.current) {
                 return
             }
             const referenceSize = Math.min(tilesContainer.current.offsetWidth, tilesContainer.current.offsetHeight)
@@ -336,53 +337,24 @@ export default function Game({availablePieces, initialBoard, animationSpeed = de
         }
         calculateTileSize()
 
-        const newPiecesCleared = {...piecesCleared}
+        const newPiecesCleared = { ...piecesCleared }
         Object.keys(goals).forEach(piece => newPiecesCleared[piece] = 0)
         setPiecesCleared(newPiecesCleared)
         window.addEventListener("resize", calculateTileSize)
-    }, [])
+    }, [goals, piecesCleared])
+
     return (
-        <AnimationSpeedContext.Provider value={animationSpeed}>
-            <div className=" border-b-4 border-orange-600 rounded-b-xl px-4 py-10 flex flex-wrap mb-6">
-                <div className={`mr-auto text-center`}>
-                    <div>
-                        Targets
-                    </div>
-                    <div className="rounded-3xl bg-orange-500 w-32 h-12 flex items-center justify-center">
-                        {
-                            Object.keys(goals).map((piece, i) => {
-                                console.log(piece)
-                                return (
-                                    <div key={i} className="h-full flex items-center text-md mx-auto">
-                                        <img src={`/pieces/piece-${piece}.png`} className="h-3/5"/>
-                                        <div>
-                                            {
-                                                remainingGoals[piece] <= 0 ?
-                                                <img src="/checkmark.svg" className={`w-4`} />
-                                                :
-                                                remainingGoals[piece]
-                                            }
-                                        </div>
-                                    </div>
-                                )
-                            })
-                        }
+        <div className="overflow-hidden">
+            {/* <GameState /> */}
+            <AnimationSpeedContext.Provider value={animationSpeed}>
+                <div className={`flex w-full mt-24`}>
+                    <GameState />
+
+                    <div ref={tilesContainer}>
+                        <Board board={board} onMove={move} boardSize={500}></Board>
                     </div>
                 </div>
-                <div className={`ml-auto text-center`}>
-                    <div className="mt-auto">
-                        Moves Left
-                    </div>
-                    <div className="rounded-3xl bg-orange-500 w-32 h-12 flex items-center justify-center text-3xl">
-                        {movesLeft}
-                    </div>
-                </div>
-            </div>
-            <div className={`flex p-4`} style={{minHeight: "50svh"}}>
-                <div ref={tilesContainer} className="w-full flex justify-center items-center">
-                    <Board board={board} onMove={move} boardSize={boardSize}></Board>
-                </div>
-            </div>
-        </AnimationSpeedContext.Provider>
+            </AnimationSpeedContext.Provider>
+        </div>
     )
 }
