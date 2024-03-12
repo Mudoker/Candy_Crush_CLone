@@ -17,7 +17,7 @@ export const availableStages : availableStageType[] = [
       [ 0, 0, 0, 0, 0, 0, -777],
     ],
     moveCount: 20,
-    goals: {"1" : 1, "2" : 1},
+    goals: {"1" : 20, "2" : 20},
     availablePieces: [1, 2, 3, 4, 5, 6],
   },
   {

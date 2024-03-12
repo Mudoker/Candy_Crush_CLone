@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-import React from 'react'
-export const GameState = () => {
+import React, { useEffect } from 'react'
+export const GameState = ({remainingGoal, remainingMove, gameState}) => {
+
   return (
     <div className='bg-white text-white items-center tracking-tighter font-BeVietnamPro mr-2 w-[260px]'>
       <div className='bg-[#3a4c95] text-2xl px-3.5 py-3'>
@@ -15,7 +16,7 @@ export const GameState = () => {
             <img className=' w-20 h-20 first-letter' alt="nct" src={`/pieces/piece-1.png`} />
 
             <div>
-              {'x20'}
+              {`x${remainingGoal[1]}`}
             </div>
           </div>
 
@@ -23,7 +24,7 @@ export const GameState = () => {
             <img className='w-20 h-20' alt="nct" src={`/pieces/piece-2.png`} />
 
             <div>
-              {'x20'}
+              {`x${remainingGoal[2]}`}
             </div>
           </div>
         </div>
@@ -32,13 +33,13 @@ export const GameState = () => {
           <div className='w-4 tracking-tight'>{'MOVE LEFT'}</div>
 
           <div className=' border-2 rounded-full px-8 py-2 self-center'>
-            {69}
+            {remainingMove}
           </div>
         </div>
       </div>
 
       <div className='text-[#3a4c95] text-left p-2 py-4 text-3xl font-semibold my-2 leading-none flex items-center justify-center'>
-        {'Neo Culture Tech Club'}
+        {gameState==='playing' ? 'Neo Culture Tech Club' : gameState === 'lose' ? 'You lost!!!' : 'You Win!!!'}
       </div>
 
     </div>

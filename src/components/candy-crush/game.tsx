@@ -198,16 +198,19 @@ function isMoveLegal(board: boardType, source: coordinateType, destination: coor
     const newBoard = _.cloneDeep(board)
     swapPieces(newBoard, source, destination)
     const map = _.flatten(getClearableMap(newBoard))
-    // console.log(getClearableMap(newBoard))
-    // console.log(map)
     return map.findIndex(e => e === true) >= 0
 }
 
 function getObjectDifferences(goals: { [key: string]: number }, piecesCleared: { [key: string]: number }) {
     const remainingGoals = Object.keys(goals).reduce((accumulator: { [key: string]: number }, piece) => {
         accumulator[piece] = goals[piece] - piecesCleared[piece];
+        if (accumulator[piece] < 0) {
+            accumulator[piece] = 0
+        }
         return accumulator;
     }, {})
+
+    // console.log("Piece cleared:", piecesCleared)
     return remainingGoals
 }
 function allGoalsReached(goals: { [key: string]: number }, piecesCleared: { [key: string]: number }) {
@@ -220,18 +223,19 @@ function allGoalsReached(goals: { [key: string]: number }, piecesCleared: { [key
     return true
 }
 
-export default function Game({ availablePieces, initialBoard, animationSpeed = defaultAnimationSpeed, goals, moveCount, onGameFinished = function () { } }: gamePropsType) {
+export default function Game({ availablePieces, initialBoard, animationSpeed = defaultAnimationSpeed, goals, moveCount}: gamePropsType) {
     const tilesContainer = useRef<HTMLDivElement>(null)
     const [boardSize, setBoardSize] = useState(1000)
     const [isProcessing, setIsProcessing] = useState(false)
     const [board, setBoard] = useState<boardType>([])
     const [movesLeft, setMovesLeft] = useState(moveCount)
     const [piecesCleared, setPiecesCleared] = useState<{ [key: string]: number }>({})
-
+    const [gameState, setGameState] = useState('playing')
     const width = board[0]?.length
     const height = board.length
 
     let remainingGoals = getObjectDifferences(goals, piecesCleared)
+
     const move = async function ({ x, y }: coordinateType, { dx = 0, dy = 0 }: { dx?: number; dy?: number }) {
         if (isProcessing || movesLeft <= 0 || allGoalsReached(goals, piecesCleared)) {
             return
@@ -306,49 +310,49 @@ export default function Game({ availablePieces, initialBoard, animationSpeed = d
 
         setIsProcessing(false)
         if (allGoalsReached(goals, newPiecesCleared)) {
-            onGameFinished("win")
+            setGameState("win")
         } else if (currentMovesLeft <= 0) {
-            onGameFinished("lose")
+            setGameState("lose")
         }
     }
 
     useEffect(() => {
-        let newBoard = fillAllZero(convertInitialBoard(initialBoard), availablePieces)
+        let newBoard = fillAllZero( convertInitialBoard(initialBoard), availablePieces)
         let result
-        do {
+        do{
             newBoard = popPieces(_.cloneDeep(newBoard), false)
             result = clearPieces(newBoard)
             newBoard = result.board
             newBoard = dropPieces(newBoard)
             newBoard = fillAllZero(newBoard, availablePieces)
-        } while (result.pieceCleared)
+        }while(result.pieceCleared)
         syncBoardPieces(newBoard)
         setBoard(newBoard)
-    }, [availablePieces, initialBoard])
+    }, [initialBoard])
 
     useEffect(() => {
-        function calculateTileSize() {
-            if (!tilesContainer.current) {
+        function calculateTileSize(){
+            if(!tilesContainer.current){
                 return
             }
             const referenceSize = Math.min(tilesContainer.current.offsetWidth, tilesContainer.current.offsetHeight)
-
+            // let size = referenceSize / Math.min(width, height)
             setBoardSize(referenceSize);
         }
         calculateTileSize()
 
-        const newPiecesCleared = { ...piecesCleared }
+        const newPiecesCleared = {...piecesCleared}
         Object.keys(goals).forEach(piece => newPiecesCleared[piece] = 0)
         setPiecesCleared(newPiecesCleared)
         window.addEventListener("resize", calculateTileSize)
-    }, [goals, piecesCleared])
+    }, [])
 
     return (
         <div className="overflow-hidden">
             {/* <GameState /> */}
             <AnimationSpeedContext.Provider value={animationSpeed}>
                 <div className={`flex w-full mt-24`}>
-                    <GameState />
+                    <GameState remainingGoal={remainingGoals} remainingMove={movesLeft} gameState={gameState}/>
 
                     <div ref={tilesContainer}>
                         <Board board={board} onMove={move} boardSize={500}></Board>

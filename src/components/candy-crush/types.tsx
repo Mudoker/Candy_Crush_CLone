@@ -10,8 +10,8 @@ type piecePropsType = {
     onClick?: Function;
 }
 type boardPropsType = {
-    board: boardType; 
-    onMove?: Function; 
+    board: boardType;
+    onMove?: Function;
     boardSize: number;
 }
 
@@ -31,5 +31,4 @@ type gamePropsType = {
     animationSpeed?: animationSpeedType;
     moveCount: number;
     goals: {[key : string] : number};
-    onGameFinished: Function;
 }

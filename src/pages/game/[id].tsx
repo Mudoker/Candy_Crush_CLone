@@ -48,7 +48,7 @@ export default function Page(){
       <div className="m-auto flex flex-col w-full items-center">
         <div className="" style={{minHeight: "100svh"}}>
           {
-            !!stage ? <Game onGameFinished={setEndgameStatus} availablePieces={stage.availablePieces} initialBoard={stage.board} moveCount={stage.moveCount} goals={stage.goals}></Game>
+            !!stage ? <Game availablePieces={stage.availablePieces} initialBoard={stage.board} moveCount={stage.moveCount} goals={stage.goals}></Game>
             : null
           }
         </div>
